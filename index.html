@@ -276,6 +276,8 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 .rm-ans .v.hid{filter:blur(9px);user-select:none}
 .rm-status{min-height:1.4em;margin:14px 0;text-align:center}
 #remote input{width:100%;margin:6px 0 14px;font-size:17px}
+.rm-sfx{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+#remote .rm-sfx button{text-transform:none;letter-spacing:0;font-size:13px;padding:.9em .3em}
 #remote .help{font-size:15px}
 </style>
 <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
@@ -362,7 +364,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 
 <script>
 /* ======================= DATA ======================= */
-const APP_VERSION = '12';
+const APP_VERSION = '13';
 const DEFAULT_TEXT = {
 emoji:`# эмодзи | ответ | год | подсказка | трейлер
 🚢🧊💔🎻 | Титаник | 1997 | 1997 · любовь на обречённом лайнере | WHtZ4NmIN1k
@@ -438,87 +440,87 @@ retro:`# вопрос | ответ | примечание | подсказка |
    фото — Википедия/Wikimedia Commons. Нужен интернет и запуск через start.command. */
 const DEFAULT_ONLINE = {
 music:`# ответ | ссылка или ID YouTube | с какой секунды (необязательно) | подсказка
-Земфира — Хочешь? | xpJ_fYyAeYk |  | 2000 · женский рок из Башкирии
-t.A.T.u. — Я сошла с ума | -F-JfWqMG6g |  | 2000 · две школьницы под дождём шокировали весь мир
-Eminem — Lose Yourself | xFYQQPAOz7Y |  | 2002 · «один шанс, одна попытка» — и «Оскар» за песню
-Дима Билан — Невозможное возможно | zcoGTd6I1PM |  | 2005 · будущий покоритель Европы верит в чудеса
-Верка Сердючка — Dancing Lasha Tumbai | ELVD_2_eCWE |  | 2007 · звезда в фольге и со звездой на голове
-ВИА Гра — Не оставляй меня, любимый | FFtbgbq-KnU |  | 2003 · три красавицы умоляют не уходить
-Britney Spears — Toxic | LOZuxwVk7TU |  | 2003 · стюардесса, которая опаснее яда
-Серебро — Song #1 | o_hZqbl-RIk |  | 2007 · дебют сразу на большой европейской сцене
-Руки Вверх! — Он тебя целует | lluIQebmAMM |  | 2002 · ревность на школьной дискотеке
-Баста — Моя игра | XDZEv-JU-GA |  | 2006 · южный рэп, где жизнь — это партия
-Linkin Park — Numb | kXYiU_JCYtU |  | 2003 · парень «онемел» от чужих ожиданий
-Тимати — Не сходи с ума | 0I8UzeIJ_SY |  | 2007 · выпускник телепроекта в тёмных очках просит не терять голову
-Корни — Ты узнаешь её | EXaCsgHVKS4 |  | 2003 · четверо парней, выросших из одного реалити
-Ленинград — WWW | XveGQdHa18I |  | 1999 · питерская громкая песня про интернет и цветок в горшке
-Shakira — Hips Don't Lie | DUT5rEU6pqM |  | 2006 · латиноамериканские бёдра, которые не умеют врать
-Фабрика — Про любовь | -dpQn82jzTY |  | 2003 · три девушки, «сделанные» на телепроизводстве
-Глюк’oZa — Невеста | 9P_wHDW2VJY |  | 2003 · мультяшная девчонка совсем не хочет замуж
-Каста — Вокруг шум | 8zHjanBzZt8 |  | 2002 · ростовский хип-хоп про суету
-50 Cent — In Da Club | 5qm8PH4xAss |  | 2003 · «с днём рождения» по-нью-йоркски — очень к месту!
-Жанна Фриске — Ла-ла-ла | 2ncsibrgaS0 |  | 2005 · бывшая «сверкающая» солистка поёт без слов в припеве
-Звери — Районы-кварталы | 2C-XqZL63_w |  | 2004 · гимн спальных районов
-Валерия — Часики | 3rAQLk8zDmY |  | 2003 · время идёт: тик-так
-The Black Eyed Peas — Where Is the Love? | WpYeekQkAdc |  | 2003 · вопрос, куда подевалась доброта в мире
-Smash!! — Belle | Lw8WADtqz-8 |  | 2002 · двое юных парней и ария из мюзикла про собор
-Uma2rmaH — Проститься | -8L9AmmtgG8 |  | 2003 · два брата с гитарами и тоска расставания
-Мумий Тролль — Невеста? | O6pd9JF3VRA |  | 2000 · дальневосточный рок и вопрос о свадьбе
-Rihanna — Umbrella | CvBfHwUxHIk |  | 2007 · «эла-эла-эй» под дождём
-Би-2 — Медленная звезда | rAUwgy4uDao |  | 2005 · мужской рок-дуэт, женский голос и неторопливый космос
-Ленинград — Мне бы в небо | R2_zN2QRbiA |  | 2003 · самая лиричная песня самой хулиганской группы
-Город 312 — Останусь | 4tVriTuoll8 |  | 2006 · звучала в продолжении фильма про Иных
-Las Ketchup — The Ketchup Song (Aserejé) | 5llcBScGuAE |  | 2002 · три сестры и танец руками на всех свадьбах
-Дискотека Авария — Небо | yWCbCGpSRy0 |  | 2003 · танцевальные парни из Кинешмы смотрят вверх
-Чичерина — Ту-лу-ла | Jv13SGNJCwA |  | 2000 · звучала в машине, пока герой ехал за правдой
-Пропаганда — Яй-я | ugkdKRFUqCQ |  | 2003 · девичья «агитация» и много яблок
-Gorillaz — Feel Good Inc. | HyHNuVaZJ-k |  | 2005 · нарисованная группа и смех на ветряной мельнице
-Винтаж — Ева | cIZTEZahjxE |  | 2009 · электропоп с библейским именем
-Нюша — Выбирать чудо | RjObnc58fAM |  | 2009 · юная дебютантка выбирает волшебство
-Григорий Лепс — Рюмка водки на столе | X778LvF-FAk |  | 2003 · хриплый голос и главный застольный хит
-Crazy Frog — Axel F | k85mRPqvMbE |  | 2005 · рингтон, который сводил с ума: «рин-дин-дин»
-Стас Михайлов — Всё для тебя | Vu6jeEUEP50 |  | 2007 · главный романтик женских сердец отдаёт всё
-Ночные Снайперы — 31-я весна | zec60-e_yi8 |  | начало 2000-х · группа с «огнестрельным» названием
-Noize MC — Устрой дестрой | EFD5cdTkeIg |  | 2010 · рэп-рок-призыв устроить беспорядок
-Timbaland feat. OneRepublic — Apologize | ZSM3w1v-A_Y |  | 2007 · извиняться уже слишком поздно
-Hi-Fi — Седьмой лепесток | d5qWwINZGhs |  | цветик-семицветик в поп-версии
-Блестящие — За четыре моря | PR7BuUOrgW4 |  | 2001 · сияющие девушки улетают далеко-далеко
-Ани Лорак — Солнце | CdeE_tN1NuQ |  | 2011 · украинская дива поёт о дневном светиле
-Lady Gaga — Poker Face | bESGLojNYSo |  | 2008 · эпатажная дебютантка с непроницаемым лицом
-Сплин — Романс | 29lSd5ucOOI |  | 1999 · старинный жанр в исполнении питерских рокеров
-Иванушки International — Тополиный пух | UUryvYF8tUs |  | 1998 · летняя «жара» и рыжий солист
-Дима Билан — Believe | uE9oiDOsEmU |  | 2008 · победа в Белграде, рядом на коньках`,
+Земфира — Хочешь? | xpJ_fYyAeYk | 19 | 2000 · женский рок из Башкирии
+t.A.T.u. — Я сошла с ума | -F-JfWqMG6g | 78 | 2000 · две школьницы под дождём шокировали весь мир
+Eminem — Lose Yourself | xFYQQPAOz7Y | 95 | 2002 · «один шанс, одна попытка» — и «Оскар» за песню
+Дима Билан — Невозможное возможно | zcoGTd6I1PM | 45 | 2005 · будущий покоритель Европы верит в чудеса
+Верка Сердючка — Dancing Lasha Tumbai | ELVD_2_eCWE | 189 | 2007 · звезда в фольге и со звездой на голове
+ВИА Гра — Не оставляй меня, любимый | FFtbgbq-KnU | 25 | 2003 · три красавицы умоляют не уходить
+Britney Spears — Toxic | LOZuxwVk7TU | 65 | 2003 · стюардесса, которая опаснее яда
+Серебро — Song #1 | o_hZqbl-RIk | 49 | 2007 · дебют сразу на большой европейской сцене
+Руки Вверх! — Он тебя целует | lluIQebmAMM | 68 | 2002 · ревность на школьной дискотеке
+Баста — Моя игра | XDZEv-JU-GA | 27 | 2006 · южный рэп, где жизнь — это партия
+Linkin Park — Numb | kXYiU_JCYtU | 52 | 2003 · парень «онемел» от чужих ожиданий
+Тимати — Не сходи с ума | 0I8UzeIJ_SY | 176 | 2007 · выпускник телепроекта в тёмных очках просит не терять голову
+Корни — Ты узнаешь её | EXaCsgHVKS4 | 119 | 2003 · четверо парней, выросших из одного реалити
+Ленинград — WWW | XveGQdHa18I | 23 | 1999 · питерская громкая песня про интернет и цветок в горшке
+Shakira — Hips Don't Lie | DUT5rEU6pqM | 17 | 2006 · латиноамериканские бёдра, которые не умеют врать
+Фабрика — Про любовь | -dpQn82jzTY | 29 | 2003 · три девушки, «сделанные» на телепроизводстве
+Глюк’oZa — Невеста | 9P_wHDW2VJY | 80 | 2003 · мультяшная девчонка совсем не хочет замуж
+Каста — Вокруг шум | 8zHjanBzZt8 | 53 | 2002 · ростовский хип-хоп про суету
+50 Cent — In Da Club | 5qm8PH4xAss | 49 | 2003 · «с днём рождения» по-нью-йоркски — очень к месту!
+Жанна Фриске — Ла-ла-ла | 2ncsibrgaS0 | 25 | 2005 · бывшая «сверкающая» солистка поёт без слов в припеве
+Звери — Районы-кварталы | 2C-XqZL63_w | 132 | 2004 · гимн спальных районов
+Валерия — Часики | 3rAQLk8zDmY | 38 | 2003 · время идёт: тик-так
+The Black Eyed Peas — Where Is the Love? | WpYeekQkAdc | 25 | 2003 · вопрос, куда подевалась доброта в мире
+Smash!! — Belle | Lw8WADtqz-8 | 25 | 2002 · двое юных парней и ария из мюзикла про собор
+Uma2rmaH — Проститься | -8L9AmmtgG8 | 73 | 2003 · два брата с гитарами и тоска расставания
+Мумий Тролль — Невеста? | O6pd9JF3VRA | 111 | 2000 · дальневосточный рок и вопрос о свадьбе
+Rihanna — Umbrella | CvBfHwUxHIk | 56 | 2007 · «эла-эла-эй» под дождём
+Би-2 — Медленная звезда | rAUwgy4uDao | 103 | 2005 · мужской рок-дуэт, женский голос и неторопливый космос
+Ленинград — Мне бы в небо | R2_zN2QRbiA | 118 | 2003 · самая лиричная песня самой хулиганской группы
+Город 312 — Останусь | 4tVriTuoll8 | 176 | 2006 · звучала в продолжении фильма про Иных
+Las Ketchup — The Ketchup Song (Aserejé) | 5llcBScGuAE | 33 | 2002 · три сестры и танец руками на всех свадьбах
+Дискотека Авария — Небо | yWCbCGpSRy0 | 175 | 2003 · танцевальные парни из Кинешмы смотрят вверх
+Чичерина — Ту-лу-ла | Jv13SGNJCwA | 58 | 2000 · звучала в машине, пока герой ехал за правдой
+Пропаганда — Яй-я | ugkdKRFUqCQ | 21 | 2003 · девичья «агитация» и много яблок
+Gorillaz — Feel Good Inc. | HyHNuVaZJ-k | 20 | 2005 · нарисованная группа и смех на ветряной мельнице
+Винтаж — Ева | cIZTEZahjxE | 25 | 2009 · электропоп с библейским именем
+Нюша — Выбирать чудо | RjObnc58fAM | 41 | 2009 · юная дебютантка выбирает волшебство
+Григорий Лепс — Рюмка водки на столе | X778LvF-FAk | 66 | 2003 · хриплый голос и главный застольный хит
+Crazy Frog — Axel F | k85mRPqvMbE | 33 | 2005 · рингтон, который сводил с ума: «рин-дин-дин»
+Стас Михайлов — Всё для тебя | Vu6jeEUEP50 | 65 | 2007 · главный романтик женских сердец отдаёт всё
+Ночные Снайперы — 31-я весна | zec60-e_yi8 | 25 | начало 2000-х · группа с «огнестрельным» названием
+Noize MC — Устрой дестрой | EFD5cdTkeIg | 47 | 2010 · рэп-рок-призыв устроить беспорядок
+Timbaland feat. OneRepublic — Apologize | ZSM3w1v-A_Y | 44 | 2007 · извиняться уже слишком поздно
+Hi-Fi — Седьмой лепесток | d5qWwINZGhs | 35 | цветик-семицветик в поп-версии
+Блестящие — За четыре моря | PR7BuUOrgW4 | 149 | 2001 · сияющие девушки улетают далеко-далеко
+Ани Лорак — Солнце | CdeE_tN1NuQ | 78 | 2011 · украинская дива поёт о дневном светиле
+Lady Gaga — Poker Face | bESGLojNYSo | 55 | 2008 · эпатажная дебютантка с непроницаемым лицом
+Сплин — Романс | 29lSd5ucOOI | 35 | 1999 · старинный жанр в исполнении питерских рокеров
+Иванушки International — Тополиный пух | UUryvYF8tUs | 41 | 1998 · летняя «жара» и рыжий солист
+Дима Билан — Believe | uE9oiDOsEmU | 70 | 2008 · победа в Белграде, рядом на коньках`,
 ost:`# ответ | ссылка или ID YouTube | с какой секунды (необязательно) | подсказка
-Бригада | mv533P_VCzU |  | 2002 · четверо друзей и дружба до гроба в лихие 90-е
-Гарри Поттер | wtHra9tFISY |  | 2001 · очки, шрам и сова
-Бумер | CjFQrN7gCxE |  | 2003 · чёрная немецкая машина и песня про телефон
-Счастливы вместе | JwJlYZRaEzo |  | 2006 · продавец обуви и его невыносимая семья
-Пираты Карибского моря | BuYf0taXoNw |  | 2003 · ром, компас и проклятое золото
-Брат 2 | 1u7WN2zBEDc |  | 2000 · продолжение: из Москвы в Чикаго
-Comedy Club | b9G969_T4GY |  | 2005 · юмористы в пиджаках по пятницам
-Ночной дозор | EFeQ2ziNRA0 |  | 2004 · Светлые против Тёмных в Москве
-Друзья | RIjTq_OdFvo |  | 1994–2004 · шестеро, оранжевый диван и кофейня
-Кто хочет стать миллионером? | xXfupT6fwzg |  | 2001 · «звонок другу» и «50 на 50»
-Универ | _WHZbCKiRXA |  | 2008 · общага, где живут физик, блондинка и парень из Сибири
-Шрек | L_jWHffIx5E |  | 2001 · зелёный, на болоте, с болтливым ослом
-Дом-2 | PPzFdUXjGak |  | 2004 · «построй свою любовь» за забором
-Папины дочки | z0vpcINfcxE |  | 2007 · один папа-стоматолог на пять девочек
-Матрица | KwVbcjJYctM |  | 1999 · красная или синяя?
-Солдаты | 7bCzC2701HI |  | 2004 · ситком про срочную службу
-Фабрика звёзд | 8UDee5CCHLk |  | 2002 · общежитие будущих поп-звёзд под камерами
-Властелин колец | CL_3mlOPnGI |  | 2001 · одно кольцо, чтобы править всеми
-Кадетство | Bk4ddDKkrP8 |  | 2006 · суворовцы, муштра и первая любовь
-Не родись красивой | cRlfj4GIIJ0 |  | 2005 · секретарша в очках и брекетах
-Доктор Хаус | u7K72X4eo_s |  | 2004 · хромой гений с тростью, который не верит пациентам
-Слабое звено | DWnLnVP5kxI |  | 2001 · строгая ведущая и голосование против своих
-Улицы разбитых фонарей | JeMWi9nZiCc |  | 1998 · питерские милиционеры
-Титаник | CUmOFqQRkco |  | 1997 · айсберг и рисунок углём
-Последний герой | G_t9ByGAn2Y |  | 2001 · знаменитости на необитаемом острове
-Бандитский Петербург | 5U4WI_yVpA4 |  | 2000 · журналист против криминального «барона»
-Побег | zdilotXGiHA |  | 2005 · план побега из тюрьмы — на собственной коже
-Каменская | y-QOe5B9Rvc |  | 1999 · женщина-аналитик с Петровки
-9 рота | HHzyk1F8L88 |  | 2005 · горы Афганистана и высота 3234
-Симпсоны | Fttst9dG6Ko |  | жёлтая семья из американского городка`,
+Бригада | mv533P_VCzU | 67 | 2002 · четверо друзей и дружба до гроба в лихие 90-е
+Гарри Поттер | wtHra9tFISY | 149 | 2001 · очки, шрам и сова
+Бумер | CjFQrN7gCxE | 17 | 2003 · чёрная немецкая машина и песня про телефон
+Счастливы вместе | JwJlYZRaEzo | 0 | 2006 · продавец обуви и его невыносимая семья
+Пираты Карибского моря | BuYf0taXoNw | 0 | 2003 · ром, компас и проклятое золото
+Брат 2 | 1u7WN2zBEDc | 19 | 2000 · продолжение: из Москвы в Чикаго
+Comedy Club | b9G969_T4GY | 0 | 2005 · юмористы в пиджаках по пятницам
+Ночной дозор | EFeQ2ziNRA0 | 28 | 2004 · Светлые против Тёмных в Москве
+Друзья | RIjTq_OdFvo | 27 | 1994–2004 · шестеро, оранжевый диван и кофейня
+Кто хочет стать миллионером? | xXfupT6fwzg | 0 | 2001 · «звонок другу» и «50 на 50»
+Универ | _WHZbCKiRXA | 0 | 2008 · общага, где живут физик, блондинка и парень из Сибири
+Шрек | L_jWHffIx5E | 35 | 2001 · зелёный, на болоте, с болтливым ослом
+Дом-2 | PPzFdUXjGak | 0 | 2004 · «построй свою любовь» за забором
+Папины дочки | z0vpcINfcxE | 22 | 2007 · один папа-стоматолог на пять девочек
+Матрица | KwVbcjJYctM | 112 | 1999 · красная или синяя?
+Солдаты | 7bCzC2701HI | 0 | 2004 · ситком про срочную службу
+Фабрика звёзд | 8UDee5CCHLk | 0 | 2002 · общежитие будущих поп-звёзд под камерами
+Властелин колец | CL_3mlOPnGI | 27 | 2001 · одно кольцо, чтобы править всеми
+Кадетство | Bk4ddDKkrP8 | 78 | 2006 · суворовцы, муштра и первая любовь
+Не родись красивой | cRlfj4GIIJ0 | 0 | 2005 · секретарша в очках и брекетах
+Доктор Хаус | u7K72X4eo_s | 51 | 2004 · хромой гений с тростью, который не верит пациентам
+Слабое звено | DWnLnVP5kxI | 0 | 2001 · строгая ведущая и голосование против своих
+Улицы разбитых фонарей | JeMWi9nZiCc | 0 | 1998 · питерские милиционеры
+Титаник | CUmOFqQRkco | 25 | 1997 · айсберг и рисунок углём
+Последний герой | G_t9ByGAn2Y | 0 | 2001 · знаменитости на необитаемом острове
+Бандитский Петербург | 5U4WI_yVpA4 | 17 | 2000 · журналист против криминального «барона»
+Побег | zdilotXGiHA | 17 | 2005 · план побега из тюрьмы — на собственной коже
+Каменская | y-QOe5B9Rvc | 0 | 1999 · женщина-аналитик с Петровки
+9 рота | HHzyk1F8L88 | 25 | 2005 · горы Афганистана и высота 3234
+Симпсоны | Fttst9dG6Ko | 0 | жёлтая семья из американского городка`,
 who:`# ответ | фото | обрезка | подсказка | видео
 Дима Билан | https://upload.wikimedia.org/wikipedia/commons/6/6b/Dima_Bilan_2008_Eurovision_2.jpg |  | Белград-2008, рядом на льду катался олимпийский чемпион | -72s4WzUcKI
 Филипп Киркоров | https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/%D0%A4%D0%B8%D0%BB%D0%B8%D0%BF%D0%BF_%D0%9A%D0%B8%D1%80%D0%BA%D0%BE%D1%80%D0%BE%D0%B2_%D0%B2_%D0%B4%D0%B5%D0%BD%D1%8C_%D1%81%D0%B2%D0%BE%D0%B5%D0%B3%D0%BE_%D1%80%D0%BE%D0%B6%D0%B4%D0%B5%D0%BD%D0%B8%D1%8F%2C_30_%D0%B0%D0%BF%D1%80%D0%B5%D0%BB%D1%8F_2017_%D0%B3%D0%BE%D0%B4%D0%B0.jpg/1920px-%D0%A4%D0%B8%D0%BB%D0%B8%D0%BF%D0%BF_%D0%9A%D0%B8%D1%80%D0%BA%D0%BE%D1%80%D0%BE%D0%B2_%D0%B2_%D0%B4%D0%B5%D0%BD%D1%8C_%D1%81%D0%B2%D0%BE%D0%B5%D0%B3%D0%BE_%D1%80%D0%BE%D0%B6%D0%B4%D0%B5%D0%BD%D0%B8%D1%8F%2C_30_%D0%B0%D0%BF%D1%80%D0%B5%D0%BB%D1%8F_2017_%D0%B3%D0%BE%D0%B4%D0%B0.jpg |  | самый яркий павлин эстрады, «зайка» и «цвет настроения» | IAuzNXGmkL4
@@ -774,7 +776,7 @@ function drop(f1, f2, d, t0 = 0, vol = .5) {     // pitched drum / boom
 }
 const sfx = {
   chime: () => { bell(1318.5, 0, .07, .6); bell(1975.5, .07, .05, .6); },
-  pop: () => { drop(500, 1400, .12, 0, .25); bell(1760, .05, .05, .4); },
+  pop: () => { const k = .8 + Math.random() * .6; drop(450 * k, 1400 * k, .12, 0, .25); bell(1760 * k, .05, .05, .4); },
   whoosh: () => noise(0, .55, {freq:400, sweep:4000, q:.8, vol:.16, attack:.25}),
   boom: (t = 0) => { drop(120, 38, 1.1, t, .6); noise(t, .5, {type:'lowpass', freq:600, vol:.25}); },
   cymbal: (t = 0) => noise(t, 1.8, {type:'highpass', freq:6500, q:.5, vol:.12, attack:.002}),
@@ -791,6 +793,66 @@ const sfx = {
   end: () => { sfx.boom(); bell(392, 0, .14, 1.2); bell(311.1, .25, .14, 1.6); },
   fanfare: () => [[523.25,0,.25],[659.25,.22,.25],[783.99,.44,.25],[1046.5,.7,1.6],[783.99,.7,1.6],[659.25,.7,1.6]].forEach(([f,t,d]) => { bell(f, t, .11, d); tone(f / 2, d, 'triangle', t, .05); }),
 };
+
+
+/* ---- crowd reactions (formant-synthesised "вау", "у-у-у", "о-о-о") ---- */
+const VOW = {u:[320, 800], o:[500, 880], a:[750, 1180], e:[480, 1900]};
+function crowd(kind = 'wow', vol = 1) {
+  const c = ac(), t0 = c.currentTime + .02;
+  const shape = {wow:{dur:1.15, vow:['u', 'a', 'u'], p:[1, 1.45, 1.05]}, aww:{dur:1.4, vow:['a', 'o', 'o'], p:[1.35, 1.1, .8]}, ooh:{dur:1.3, vow:['u', 'o', 'o'], p:[.95, 1.2, 1.35]}}[kind] || {dur:1, vow:['a', 'a', 'a'], p:[1, 1, 1]};
+  const out = c.createGain(); out.gain.value = .22 * vol; out.connect(c.destination);
+  for (let i = 0; i < 16; i++) {
+    const t = t0 + Math.random() * .14, d = shape.dur * (.85 + Math.random() * .3);
+    const base = (i % 2 ? 105 : 190) * (.88 + Math.random() * .3);
+    const o = c.createOscillator(); o.type = 'sawtooth';
+    o.frequency.setValueAtTime(base * shape.p[0], t);
+    o.frequency.linearRampToValueAtTime(base * shape.p[1], t + d * .4);
+    o.frequency.linearRampToValueAtTime(base * shape.p[2], t + d);
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.11, t + .09); g.gain.setValueAtTime(.11, t + d * .7); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    for (const fi of [0, 1]) {
+      const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 6;
+      shape.vow.forEach((v, k) => f.frequency.linearRampToValueAtTime(VOW[v][fi], t + d * (k / (shape.vow.length - 1))));
+      const fg = c.createGain(); fg.gain.value = fi ? .6 : 1;
+      o.connect(f).connect(fg).connect(g);
+    }
+    g.connect(out); o.start(t); o.stop(t + d + .05);
+  }
+  noise(0, shape.dur, {freq:900, q:.7, vol:.035 * vol, attack:.1});
+}
+function harp(up = true) { const notes = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.7, 1318.5]; (up ? notes : [...notes].reverse()).forEach((f, i) => bell(f, i * .045, .05, .9)); }
+
+/* ---- quiet background lounge music when nothing else plays ---- */
+const BG = {gain:null, timer:null, step:0, next:0};
+const CHORDS = [[53, 57, 60, 64], [52, 55, 59, 62], [50, 53, 57, 60], [48, 52, 55, 59]];   // Fmaj7 · Em7 · Dm7 · Cmaj7
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+function bgNote(f, t, d, type, vol, cutoff) {
+  const o = AC.createOscillator(), g = AC.createGain(), fl = AC.createBiquadFilter();
+  o.type = type; o.frequency.value = f; fl.type = 'lowpass'; fl.frequency.value = cutoff;
+  g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(vol, t + Math.min(.25, d * .3)); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  o.connect(fl).connect(g).connect(BG.gain); o.start(t); o.stop(t + d + .05);
+}
+function bgTick() {
+  const beat = 60 / 82;
+  while (BG.next < AC.currentTime + .7) {
+    const t = BG.next, s = BG.step, ch = CHORDS[Math.floor(s / 8) % 4], st = s % 8;
+    if (st === 0) { ch.forEach(m => bgNote(mtof(m), t, beat * 4.3, 'triangle', .045, 1300)); bgNote(mtof(ch[0] - 12), t, beat * 3.6, 'sine', .11, 500); }
+    if (st === 4) bgNote(mtof(ch[0] - 5), t, beat * 1.9, 'sine', .07, 500);
+    bgNote(mtof(ch[[0, 2, 1, 3, 2, 1, 3, 2][st]] + 12), t, beat * .95, 'sine', .026, 2600);
+    if (st === 2 || st === 6) noise(t - AC.currentTime, .08, {type:'highpass', freq:7000, vol:.012, attack:.003});
+    BG.next += beat / 2; BG.step++;
+  }
+}
+function bgUpdate() {
+  if (REMOTE_MODE || !AC) return;
+  if (!BG.gain) { BG.gain = AC.createGain(); BG.gain.gain.value = 0; BG.gain.connect(AC.destination); BG.next = AC.currentTime + .2; BG.timer = setInterval(bgTick, 250); }
+  const busy = ytPlaying || !player.paused || (G && G.revealing) || $('#finale').classList.contains('withvid');
+  const want = $('#start').classList.contains('off') && !busy && !document.hidden;
+  BG.gain.gain.setTargetAtTime(want ? .5 : 0, AC.currentTime, want ? 1.5 : .2);
+}
+setInterval(bgUpdate, 300);
+function soundboard(v) {
+  ({applause:() => sfx.applause(3), wow:() => crowd('wow'), aww:() => crowd('aww'), ooh:() => crowd('ooh'), drum:() => { sfx.drumroll(1.6); sfx.cymbal(1.6); }, fanfare:() => { sfx.fanfare(); confetti(160); }})[v]?.();
+}
 
 /* ======================= NAV ======================= */
 let G = null;
@@ -824,7 +886,7 @@ function toggleTimer() {
   T.iv = setInterval(() => {
     T.left--; drawTimer();
     if (T.left > 0 && T.left <= 5) sfx.tick();
-    if (T.left <= 0) { clearInterval(T.iv); T.iv = null; sfx.end(); $('#timer').textContent = '✦'; setTimeout(() => { if (!T.iv) $('#timer').className = 'timer'; }, 2200); }
+    if (T.left <= 0) { clearInterval(T.iv); T.iv = null; sfx.end(); setTimeout(() => crowd('aww'), 300); $('#timer').textContent = '✦'; setTimeout(() => { if (!T.iv) $('#timer').className = 'timer'; }, 2200); }
   }, 1000);
 }
 function drawTimer() { const el = $('#timer'); el.textContent = T.left; el.className = 'timer on' + (T.left <= 5 ? ' warn' : ''); }
@@ -880,7 +942,7 @@ function renderGame() {
     stage.innerHTML = `<div class="endcard"><div class="caps">раунд ${r.num}</div><div class="big gold">Раунд сыгран</div><div class="orn">✦</div></div>`;
     const nx = ROUNDS[ROUNDS.findIndex(x => x.id === G.rid) + 1];
     ctr.innerHTML = `<button data-act="prev">‹ Назад</button><button data-go="home">К раундам</button>${nx ? `<button class="main" data-act="nextround">Дальше: ${esc(nx.title)} ›</button>` : `<button class="main" data-go="finale">Финал ✦</button>`}`;
-    confetti(220); sfx.fanfare(); sfx.applause(3.5); return;
+    confetti(220); sfx.fanfare(); sfx.applause(3.5); setTimeout(() => crowd('wow'), 500); return;
   }
   const it = list[G.idx];
   const nav = mid => `<button data-go="home">Меню</button><button data-act="prev">‹<kbd>←</kbd></button>${mid}<button data-act="timer">Таймер<kbd>T</kbd></button><button class="main" data-act="reveal">Ответ<kbd>⏎</kbd></button><button data-act="next">›<kbd>→</kbd></button>`;
@@ -951,7 +1013,7 @@ function fitImg() {
   Object.assign(img.style, {width:nw * k + 'px', height:nh * k + 'px', marginLeft:-nw * l * k + 'px', marginTop:-nh * t * k + 'px', marginBottom:-nh * b * k + 'px', marginRight:-nw * r * k + 'px'});
   Object.assign(wrap.style, {width:cw * k + 'px', height:ch * k + 'px'});
 }
-const BLUR = [48, 32, 22, 14, 8, 3], ZOOM = [7, 4.6, 3.1, 2.1, 1.5, 1.15];
+const BLUR = [18, 12, 8, 5, 3, 1.5], ZOOM = [3.4, 2.6, 2, 1.6, 1.3, 1.1];
 function applyReveal(instant) {
   const img = $('#gimg'); if (!img) return;
   const mode = S.modes[G.rid] || R(G.rid).mode, h = Math.min(G.open, BLUR.length - 1);
@@ -966,7 +1028,7 @@ function hint() {
   if (!G || G.revealed || !cur() || !['text', 'image', 'audio'].includes(rtype())) return;
   const max = cur().hint ? 2 : 1;
   if (G.hint >= max) return;
-  G.hint++; sfx.chime(); renderAnswer();
+  G.hint++; harp(); if (G.hint === 2 || !cur().hint) setTimeout(() => crowd('ooh', .7), 250); renderAnswer();
 }
 // Pictures: uncover a bit more (tiles / less blur / less zoom).
 const graphemes = s => { try { return [...new Intl.Segmenter('ru', {granularity:'grapheme'}).segment(s)].map(x => x.segment).filter(x => x.trim()); } catch (e) { return Array.from(s).filter(x => x.trim()); } };
@@ -996,7 +1058,7 @@ function reveal() {
 function doReveal() {
   G.revealed = true;
   showEmojis(true);
-  applyReveal(); renderAnswer(); sfx.reveal(); confetti(90);
+  applyReveal(); renderAnswer(); sfx.reveal(); setTimeout(() => crowd('wow'), 120); confetti(90);
   const t = rtype(), it = cur();
   if (t === 'audio' && it.video) {      // reversed song: after the answer play the original clip
     clearTimeout(stopT); ytPendingFrag = null;
@@ -1599,6 +1661,7 @@ function handleCmd(d) {
   if (c === 'hello' || c === 'ping') { NET.last = ''; updLinked(); return; }
   if (c === 'open') return openRound(d.rid);
   if (c === 'go') return show(d.to);
+  if (c === 'sfx') return soundboard(d.v);
   if (c === 'start') return startGame(true);
   if (c === 'name') { S.name = String(d.v || '').slice(0, 40); save(); $('#sName').textContent = S.name || 'дорогой друг'; if ($('#home').classList.contains('active')) renderHome(); return; }
   const map = {prev:() => go(-1), next:() => go(1), play:space, more, hint, uncover, reveal,
@@ -1669,10 +1732,14 @@ function rmRender() {
     <p class="caps" style="margin-top:22px">имя именинника на экране</p><input id="rmName" value="${esc(st.name)}" placeholder="например, Серёга">`;
   $('#remote').innerHTML = top + body + `<div class="caps rm-status" id="rmStatus">${esc(st?.status || '')}</div>`;
 }
+const rmSfx = () => `<p class="caps" style="margin:22px 0 8px">звуки для гостей</p><div class="rm-sfx">
+  <button data-c="sfx" data-v="applause">👏 Аплодисменты</button><button data-c="sfx" data-v="wow">😮 Вау</button>
+  <button data-c="sfx" data-v="aww">😢 У-у-у</button><button data-c="sfx" data-v="ooh">🤔 О-о-о</button>
+  <button data-c="sfx" data-v="drum">🥁 Дробь</button><button data-c="sfx" data-v="fanfare">🎺 Фанфары</button></div>`;
 function rmGame(st) {
   const head = `<div class="caps">— ${st.num} —</div><div class="rm-h">${esc(st.title)}</div><div class="rm-sub">${st.end ? 'раунд сыгран' : `${st.idx + 1} из ${st.n}`}</div>`;
   if (st.end) { const i = st.rounds.findIndex(r => r.id === st.rid), nx = st.rounds[i + 1];
-    return head + `<div class="rm-grid">${nx ? `<button class="main big wide" data-c="nextround">Дальше: ${esc(nx.title)} ›</button>` : `<button class="main big wide" data-c="go" data-to="finale">Финал ✦</button>`}<button data-c="prev">‹ Назад</button><button data-c="go" data-to="home">К раундам</button></div>`; }
+    return head + `<div class="rm-grid">${nx ? `<button class="main big wide" data-c="nextround">Дальше: ${esc(nx.title)} ›</button>` : `<button class="main big wide" data-c="go" data-to="finale">Финал ✦</button>`}<button data-c="prev">‹ Назад</button><button data-c="go" data-to="home">К раундам</button></div>` + rmSfx(); }
   const nav = `<button data-c="prev">‹ Назад</button><button data-c="next">Дальше ›</button>`;
   const timer = `<button class="wide" data-c="timer">${st.timer != null ? `Таймер: ${st.timer}` : 'Таймер'}</button>`;
   if (st.type === 'video') return head + `<p class="help">Песни звучат задом наперёд, ответ видео покажет само. Ставьте на паузу, чтобы гости подумали.</p>
@@ -1688,7 +1755,7 @@ function rmGame(st) {
   else if (st.type === 'text') g = hintBtn();
   if (!st.revealed && st.type === 'image') g = `<button class="big" data-c="uncover">Открыть ещё</button><button class="big" data-c="mode">Режим: ${esc(st.mode)}</button>${hintBtn()}`;
   if (st.type === 'audio' && !st.revealed) g = `<button class="big wide" data-c="play">${st.playing ? '❚❚ Пауза' : '▶ Играть'}</button><button data-c="more">+5 секунд</button><button data-c="restart">С начала</button>${hintBtn()}`;
-  return head + ans + `<div class="rm-grid">${g}${ansBtn}${nav}${timer}</div>`;
+  return head + ans + `<div class="rm-grid">${g}${ansBtn}${nav}${timer}</div>` + rmSfx();
 }
 document.addEventListener('click', e => {
   if (!document.body.classList.contains('remote')) return;
@@ -1698,6 +1765,7 @@ document.addEventListener('click', e => {
   if (c === 'code') { location.search = '?pult'; return; }
   if (c === 'open') rmSend({cmd:'open', rid:b.dataset.rid});
   else if (c === 'go') rmSend({cmd:'go', to:b.dataset.to});
+  else if (c === 'sfx') rmSend({cmd:'sfx', v:b.dataset.v});
   else rmSend({cmd:c});
   if (navigator.vibrate) navigator.vibrate(15);
 }, true);
@@ -1706,7 +1774,7 @@ document.addEventListener('input', e => { if (e.target.id === 'rmName') rmSend({
 /* ======================= INIT ======================= */
 const QS = new URLSearchParams(location.search);
 // Always run the newest version: compare with version.json (never cached) and reload once if the page is stale.
-(function selfUpdate() {
+function selfUpdate() {
   try {
     fetch('version.json?t=' + Date.now(), {cache:'no-store'}).then(r => r.json()).then(j => {
       if (!j || !j.v || String(j.v) === APP_VERSION) return;
@@ -1716,7 +1784,10 @@ const QS = new URLSearchParams(location.search);
       location.replace(location.pathname + '?' + q.toString());
     }).catch(() => {});
   } catch (e) {}
-})();
+}
+selfUpdate();
+// while the TV waits on the start screen, look for a newer version every minute
+setInterval(() => { if (!REMOTE_MODE && !$('#start').classList.contains('off')) { sessionStorage.removeItem('bd-upd'); selfUpdate(); } }, 60000);
 document.getElementById('verTag').textContent = 'версия ' + APP_VERSION;
 setInterval(() => {
   if (REMOTE_MODE) return;
