@@ -234,6 +234,10 @@ body.linked .h-actions button{opacity:.35}
 .st-left .h-name{font-size:6.8rem;text-align:left;margin:0;max-width:46rem}
 .st-go{font-family:var(--serif);font-size:2.1rem;line-height:1.45;color:var(--ink)}
 .st-go b{color:var(--g1);font-weight:400}
+.st-diag{font-size:1rem;letter-spacing:.12em;line-height:1.8;color:var(--dim)}
+.st-diag b{color:var(--g2);font-weight:500}
+.ver{position:fixed;left:2.6rem;bottom:1.9rem;font-size:.85rem;letter-spacing:.2em;color:var(--dim);z-index:31;pointer-events:none}
+body.remote .ver{display:none}
 .st-right{display:flex;flex-direction:column;align-items:center;width:30rem}
 .qrbox{display:inline-block;background:#f3ead7;padding:1.6rem;line-height:0;outline:1px solid var(--line);outline-offset:1rem}
 .qrbox img,.qrbox canvas{width:24rem!important;height:24rem!important;image-rendering:pixelated}
@@ -279,6 +283,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 </head>
 <body>
 <div class="frame"><i></i><i></i><i></i><i></i></div>
+<div class="ver caps" id="verTag"></div>
 
 <!-- HOME -->
 <section id="home" class="screen active">
@@ -344,6 +349,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
     <div class="h-name gold" id="sName" style="text-align:left">дорогой друг</div>
     <div class="st-go">1. Отсканируйте QR камерой телефона — телефон станет пультом<br>2. Нажмите <b>OK</b> на пульте телевизора, чтобы включить звук</div>
     <div class="caps" id="stHint"></div>
+    <div class="caps st-diag" id="stDiag"></div>
   </div>
   <div class="st-right"><div class="qrbox" id="qrBig"></div><div class="caps qrcap" id="qrCap">подключение…</div></div>
 </div>
@@ -356,6 +362,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 
 <script>
 /* ======================= DATA ======================= */
+const APP_VERSION = '12';
 const DEFAULT_TEXT = {
 emoji:`# эмодзи | ответ | год | подсказка | трейлер
 🚢🧊💔🎻 | Титаник | 1997 | 1997 · любовь на обречённом лайнере | WHtZ4NmIN1k
@@ -837,7 +844,7 @@ const cur = () => G && itemsOf(G.rid)[G.idx];
 const rtype = () => G && R(G.rid).type;
 function resetItem() {
   stopAllAudio(); ytShow(false); stopTimer();
-  Object.assign(G, {revealed:false, revealing:false, hint:0, open:0, started:false, rv:null, choices:null, tiles:new Set(Array.from({length:24}, (_, i) => i)),
+  Object.assign(G, {revealed:false, revealing:false, forcedShow:false, hint:0, open:0, started:false, rv:null, choices:null, tiles:new Set(Array.from({length:24}, (_, i) => i)),
     origin:`${25 + Math.random() * 50}% ${25 + Math.random() * 50}%`});
 }
 function nextRound() {
@@ -1030,7 +1037,7 @@ function ytLoad() {
     if (window.YT && YT.Player) return make();     // API already loaded (player rebuild)
     window.onYouTubeIframeAPIReady = make;
     const s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api';
-    s.onerror = () => { ytReady = null; setStatus('YouTube не загрузился — проверьте интернет'); res(null); };
+    s.onerror = () => { ytReady = null; NET.ytErr = true; setStatus('YouTube не загрузился — проверьте интернет'); res(null); };
     document.head.appendChild(s);
   });
   return ytReady;
@@ -1128,6 +1135,10 @@ function updAudioStatus() {
   if (!G || !isMedia(rtype()) || !$('#astatus')) return;
   const paused = mPaused();
   $('#stage').classList.toggle('playing', !paused);
+  if (isYt() && G.started && !G.ytError && paused && G.ytLoadAt && performance.now() - G.ytLoadAt > 9000 && /загрузка/.test($('#astatus').textContent)) {
+    if (!G.forcedShow) { G.forcedShow = true; ytShow(true); }   // fallback: let the host press ▶ on the YouTube player itself
+    return setStatus('YouTube ждёт нажатия — наведите курсор пульта на ▶ в видео и нажмите OK');
+  }
   if (isYt() && G.started && !G.ytError && paused && ytPendingFrag != null && G.ytLoadAt && performance.now() - G.ytLoadAt > 2500) {
     try { if (YTP.getPlayerState() === -1 && YTP.getCurrentTime() > 0.5) return setStatus('реклама YouTube — музыка начнётся сразу после неё'); } catch (e) {}
   }
@@ -1694,6 +1705,25 @@ document.addEventListener('input', e => { if (e.target.id === 'rmName') rmSend({
 
 /* ======================= INIT ======================= */
 const QS = new URLSearchParams(location.search);
+// Always run the newest version: compare with version.json (never cached) and reload once if the page is stale.
+(function selfUpdate() {
+  try {
+    fetch('version.json?t=' + Date.now(), {cache:'no-store'}).then(r => r.json()).then(j => {
+      if (!j || !j.v || String(j.v) === APP_VERSION) return;
+      if (sessionStorage.getItem('bd-upd') === String(j.v)) return;      // already tried once
+      sessionStorage.setItem('bd-upd', String(j.v));
+      const q = new URLSearchParams(location.search); q.set('v', j.v);
+      location.replace(location.pathname + '?' + q.toString());
+    }).catch(() => {});
+  } catch (e) {}
+})();
+document.getElementById('verTag').textContent = 'версия ' + APP_VERSION;
+setInterval(() => {
+  if (REMOTE_MODE) return;
+  const yt = YTP && YTP.playVideo ? '<b>готов</b>' : NET.ytErr ? '<b>не загрузился — нет интернета?</b>' : 'загружается…';
+  const mq = NET.ok ? '<b>на связи</b>' : 'подключение…';
+  $('#stDiag').innerHTML = `версия ${APP_VERSION} · YouTube: ${yt} · сервер пульта: ${mq}`;
+}, 1000);
 const REMOTE_MODE = QS.has('r') || QS.has('pult') || (!QS.has('tv') && isPhoneUA());
 if (REMOTE_MODE) remoteApp(QS.get('r'), QS.has('b') ? +QS.get('b') : null);
 else (async () => {
