@@ -364,7 +364,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 
 <script>
 /* ======================= DATA ======================= */
-const APP_VERSION = '13';
+const APP_VERSION = '14';
 const DEFAULT_TEXT = {
 emoji:`# эмодзи | ответ | год | подсказка | трейлер
 🚢🧊💔🎻 | Титаник | 1997 | 1997 · любовь на обречённом лайнере | WHtZ4NmIN1k
@@ -965,7 +965,7 @@ function renderGame() {
     applyReveal(true);
   } else if (r.type === 'audio') {
     stage.innerHTML = audioBox('Слушаем и угадываем');
-    ctr.innerHTML = nav(`<button data-act="play">Играть<kbd>␣</kbd></button><button data-act="more">Ещё 5 сек<kbd>A</kbd></button><button data-act="hint">Подсказка<kbd>H</kbd></button>`);
+    ctr.innerHTML = nav(`<button data-act="play">Играть<kbd>␣</kbd></button><button data-act="more">Ещё 10 сек<kbd>A</kbd></button><button data-act="hint">Подсказка<kbd>H</kbd></button>`);
   } else if (r.type === 'video') {
     stage.innerHTML = '';
     ctr.innerHTML = `<button data-go="home">Меню</button><button data-act="prev">‹<kbd>←</kbd></button><button class="main" data-act="play">Играть / пауза<kbd>␣</kbd></button><button data-act="back10">« 10 сек</button><button data-act="fwd10">10 сек »</button><button data-act="next">›<kbd>→</kbd></button>`;
@@ -1182,15 +1182,15 @@ function space() {
   if (!G || !cur()) return;
   if (G.rv) { if (mPaused()) mPlay(0); else mPause(); return; }
   if (!isMedia(rtype())) return;
-  if (!G.started) return playFrom(startOf(), rtype() === 'video' ? 0 : (R(G.rid).frag || +S.frag || 7));
+  if (!G.started) return playFrom(startOf(), rtype() === 'video' ? 0 : (R(G.rid).frag || Math.max(+S.frag || 0, 12)));
   if (mPaused()) mPlay(0); else mPause();
 }
 function more() {
   if (rtype() === 'video') return seekBy(10);
   if (rtype() !== 'audio' || !cur()) return;
   if (G.revealed) { if (mPaused()) mPlay(0); return; }
-  if (!G.started) return playFrom(startOf(), 5);
-  mPlay(5);
+  if (!G.started) return playFrom(startOf(), 10);
+  mPlay(10);
 }
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 function updAudioStatus() {
@@ -1754,7 +1754,7 @@ function rmGame(st) {
   else if (st.type === 'text' && st.emoji) g = `<button class="big wide" data-c="uncover" ${st.emojiLeft > 0 ? '' : 'disabled style="opacity:.45"'}>Ещё эмодзи${st.emojiLeft > 0 ? ` (осталось ${st.emojiLeft})` : ''}</button>${hintBtn()}`;
   else if (st.type === 'text') g = hintBtn();
   if (!st.revealed && st.type === 'image') g = `<button class="big" data-c="uncover">Открыть ещё</button><button class="big" data-c="mode">Режим: ${esc(st.mode)}</button>${hintBtn()}`;
-  if (st.type === 'audio' && !st.revealed) g = `<button class="big wide" data-c="play">${st.playing ? '❚❚ Пауза' : '▶ Играть'}</button><button data-c="more">+5 секунд</button><button data-c="restart">С начала</button>${hintBtn()}`;
+  if (st.type === 'audio' && !st.revealed) g = `<button class="big wide" data-c="play">${st.playing ? '❚❚ Пауза' : '▶ Играть'}</button><button data-c="more">+10 секунд</button><button data-c="restart">С начала</button>${hintBtn()}`;
   return head + ans + `<div class="rm-grid">${g}${ansBtn}${nav}${timer}</div>` + rmSfx();
 }
 document.addEventListener('click', e => {
