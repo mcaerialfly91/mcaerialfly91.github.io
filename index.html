@@ -201,7 +201,7 @@ textarea{width:100%;line-height:1.55;font-size:14px}
 /* ---------- FINALE ---------- */
 #finale{align-items:center;justify-content:center;text-align:center;gap:2rem}
 #finale .h-name{font-size:10.5rem}
-.toast{font-family:var(--serif);font-style:italic;font-size:2.5rem;color:var(--ink);max-width:70rem;line-height:1.45}
+.toast{text-wrap:balance;font-family:var(--serif);font-style:italic;font-size:2.5rem;color:var(--ink);max-width:70rem;line-height:1.45}
 
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
 #intro{position:fixed;inset:0;z-index:45;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;pointer-events:none;opacity:0;
@@ -339,7 +339,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
   <h1 class="h-title">С днём рождения</h1>
   <div class="h-name gold" id="fName"></div>
   <div class="orn">✦</div>
-  <div class="toast">Пусть следующие сорок будут ещё громче, ярче и вкуснее.<br>За именинника!</div>
+  <div class="toast">46 — отличный возраст! Пусть каждый следующий год будет ещё громче, ярче и вкуснее.<br>За именинника!</div>
   <div class="finvid" id="finVid"></div>
   <div class="h-actions"><button class="ghost" data-act="party">Ещё салют</button><button class="ghost" data-go="home">Меню</button></div>
 </section>
@@ -365,7 +365,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 
 <script>
 /* ======================= DATA ======================= */
-const APP_VERSION = '1';
+const APP_VERSION = '2';
 const DEFAULT_TEXT = {
 emoji:`# эмодзи | ответ | год | подсказка | трейлер
 🎻💎🥶🌊💑🧊🚢 | Титаник | 1997 | 1997 · любовь на обречённом лайнере | WHtZ4NmIN1k
