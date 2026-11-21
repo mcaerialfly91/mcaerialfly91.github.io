@@ -218,7 +218,7 @@ textarea{width:100%;line-height:1.55;font-size:14px}
 @keyframes sweep{to{transform:translateX(100%)}}
 .drum{font-size:1.6rem;color:var(--g1);animation:pulse .25s infinite}
 .finvid{display:none}
-#finale.withvid{display:grid;grid-template-columns:minmax(0,1fr) 46rem;grid-template-rows:auto;column-gap:3rem;align-content:center;justify-items:center;text-align:center}
+#finale.active.withvid{display:grid;grid-template-columns:minmax(0,1fr) 46rem;grid-template-rows:auto;column-gap:3rem;align-content:center;justify-items:center;text-align:center}
 #finale.withvid>*{grid-column:1}
 #finale.withvid .h-name{font-size:6.4rem;max-width:44rem;white-space:normal;text-wrap:balance;line-height:1.05}
 #finale.withvid .toast{font-size:2.1rem;max-width:44rem}
@@ -365,7 +365,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 
 <script>
 /* ======================= DATA ======================= */
-const APP_VERSION = '2';
+const APP_VERSION = '3';
 const DEFAULT_TEXT = {
 emoji:`# эмодзи | ответ | год | подсказка | трейлер
 🎻💎🥶🌊💑🧊🚢 | Титаник | 1997 | 1997 · любовь на обречённом лайнере | WHtZ4NmIN1k
@@ -863,6 +863,7 @@ function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
   $('#qrmini').hidden = id !== 'home' || !NET.url;
   if (id !== 'game') { stopAllAudio(); ytShow(false); stopTimer(); G = null; }
+  if (id !== 'finale') { $('#finale').classList.remove('withvid'); clearInterval(NET.finTimer); }
   if (id === 'home') renderHome();
   if (id === 'prep') renderPrep();
   if (id === 'finale') renderFinale();
