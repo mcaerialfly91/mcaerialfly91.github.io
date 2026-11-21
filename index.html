@@ -365,7 +365,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 
 <script>
 /* ======================= DATA ======================= */
-const APP_VERSION = '19';
+const APP_VERSION = '20';
 const DEFAULT_TEXT = {
 emoji:`# эмодзи | ответ | год | подсказка | трейлер
 🎻💎🥶🌊💑🧊🚢 | Титаник | 1997 | 1997 · любовь на обречённом лайнере | WHtZ4NmIN1k
@@ -659,12 +659,13 @@ const S = (() => {
   try { s = JSON.parse(localStorage.getItem(LS)) || {}; } catch (e) {}
   return {
     name: s.name || '', timer: s.timer || 30, frag: s.frag || 7, offset: s.offset || 0, revLen: s.revLen || 12,
-    texts: Object.assign({...DEFAULT_TEXT, reverse:DEFAULT_REVERSE}, s.texts || {}),
-    online: Object.assign({...DEFAULT_ONLINE}, s.online || {}),
+    // question lists always come from this version of the game (never from an old saved copy)
+    texts: {...DEFAULT_TEXT, reverse:DEFAULT_REVERSE},
+    online: {...DEFAULT_ONLINE},
     modes: Object.assign({who:'blur', frame:'tiles'}, s.modes || {}),
   };
 })();
-const save = () => { try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {} };
+const save = () => { try { const {texts, online, ...keep} = S; localStorage.setItem(LS, JSON.stringify(keep)); } catch (e) {} };
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
