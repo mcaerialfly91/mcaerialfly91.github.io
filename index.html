@@ -365,7 +365,7 @@ body.remote .screen,body.remote #start,body.remote #ytwrap{display:none!importan
 
 <script>
 /* ======================= DATA ======================= */
-const APP_VERSION = '16';
+const APP_VERSION = '17';
 const DEFAULT_TEXT = {
 emoji:`# эмодзи | ответ | год | подсказка | трейлер
 🎻💎🥶🌊💑🧊🚢 | Титаник | 1997 | 1997 · любовь на обречённом лайнере | WHtZ4NmIN1k
@@ -1797,7 +1797,11 @@ function selfUpdate() {
 }
 selfUpdate();
 // while the TV waits on the start screen, look for a newer version every minute
-setInterval(() => { if (!REMOTE_MODE && !$('#start').classList.contains('off')) { sessionStorage.removeItem('bd-upd'); selfUpdate(); } }, 60000);
+// check for a newer version every minute on the start screen and in the main menu (never in the middle of a round)
+setInterval(() => {
+  if (REMOTE_MODE) { sessionStorage.removeItem('bd-upd'); selfUpdate(); return; }
+  if (!$('#start').classList.contains('off') || $('#home').classList.contains('active')) { sessionStorage.removeItem('bd-upd'); selfUpdate(); }
+}, 60000);
 document.getElementById('verTag').textContent = 'версия ' + APP_VERSION;
 setInterval(() => {
   if (REMOTE_MODE) return;
